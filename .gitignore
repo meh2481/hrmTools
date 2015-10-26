@@ -21,8 +21,14 @@
 *.pak
 vdata/*
 data/*
+output/*
 *.zip
 ogg.txt
 out.txt
 resinfo.txt
 mergeresults.txt
+residmap.dat
+residmap.dat.xml
+residmapout.txt
+sdata/*
+*.compressed

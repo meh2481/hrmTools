@@ -1,5 +1,6 @@
 #include "pakDataTypes.h"
 #include "residmap.h"
+#include <sstream>
 
 //#define RESIDMAP_FILENAME	"vdata/residmap.dat.xml"
 
@@ -30,7 +31,12 @@ u32 getResID(wstring sName)
 const wchar_t* getName(u32 resId)
 {
 	if(!g_pakMappings.count(resId))
+	{
 		cout << "No residmap entry for id " << resId << endl;
+		ostringstream oss;
+		oss << "output/" << resId;
+		return s2ws(oss.str()).c_str();
+	}
 	return g_pakMappings[resId].c_str();
 }
 

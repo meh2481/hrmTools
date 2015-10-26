@@ -43,6 +43,13 @@ void parseCmdLine(int argc, char** argv)
 //Main program entry point
 int main(int argc, char** argv)
 {
+	//Firstly, parse residmap.dat...
+	//residMapToXML(s2ws("residmap.dat").c_str());
+	
+	
+	//return 0;
+
+
 	g_bProgressOverwrite = false;
 	biOS = false;
 	g_iNumThreads = 0;
@@ -74,6 +81,7 @@ int main(int argc, char** argv)
 			continue;
 		}
 		
+		//Read .pak header
 		blobHeader bH;
 		if(fread((void*)&bH, 1, sizeof(blobHeader), f) != sizeof(blobHeader))
 		{
@@ -83,7 +91,7 @@ int main(int argc, char** argv)
 		}
 		
 		list<resourceHeader> lResourceHeaders;
-		
+		//Read resource headers
 		for(int i = 0; i < bH.numItems; i++)
 		{
 			resourceHeader rH;
@@ -96,7 +104,7 @@ int main(int argc, char** argv)
 			}
 			lResourceHeaders.push_back(rH);
 		}
-			
+		
 		//Create list file with all the files that were in this .pak
 		string sPakListFilename = "";
 		for(int i = strlen(argv[iArg])-1; i >= 0; i--)

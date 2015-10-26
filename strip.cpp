@@ -4,15 +4,15 @@
 #include <stdlib.h>
 using namespace std;
 
-#define RESOURCE_1_NAME	"resource.pak"
-#define RESOURCE_2_NAME	"embed.pak"
-#define RESOURCE_3_NAME	"frontend.pak"
+#define RESOURCE_1_NAME	"resources.pak"
+//#define RESOURCE_2_NAME	"embed.pak"
+//#define RESOURCE_3_NAME	"frontend.pak"
 
 #define RESOURCE_TYPE	20480
 
 #define RESOURCE_1	1
-#define RESOURCE_2	2
-#define RESOURCE_3	3
+//#define RESOURCE_2	2
+//#define RESOURCE_3	3
 
 int pullPakFiles(int argc, char** argv)
 {
@@ -20,7 +20,7 @@ int pullPakFiles(int argc, char** argv)
 	
 	if(argc != 2)
 	{
-		cout << "Usage: pullpakfiles.exe [little inferno executable filename]" << endl;
+		cout << "Usage: strip.exe [little inferno executable filename]" << endl;
 		return 1;
 	}
 
@@ -37,7 +37,8 @@ int pullPakFiles(int argc, char** argv)
 	//cout << "50 percent done" << endl;
 	
 	//Grab resources
-	for(int iResource = RESOURCE_1; iResource <= RESOURCE_3; iResource++)
+	int iResource = RESOURCE_1;
+	//for(int iResource = RESOURCE_1; iResource <= RESOURCE_3; iResource++)
 	{
 		HRSRC hResource = FindResource(hExe, MAKEINTRESOURCE(iResource), MAKEINTRESOURCE(RESOURCE_TYPE));
 		if (!hResource) 
@@ -59,7 +60,8 @@ int pullPakFiles(int argc, char** argv)
 			return 1;
 		}
 		
-		char cName[512];
+		char* cName = RESOURCE_1_NAME;
+		/*char cName[512];
 		switch(iResource)
 		{
 			case RESOURCE_1:
@@ -73,7 +75,7 @@ int pullPakFiles(int argc, char** argv)
 			default:
 				sprintf(cName, "%s", RESOURCE_3_NAME);
 				break;
-		}
+		}*/
 		
 		//cout << "Stripping resource " << cName << endl;
 		HGLOBAL hgResData = LoadResource(hExe, hResource);
@@ -96,7 +98,7 @@ int pullPakFiles(int argc, char** argv)
 			return 1;
 		}
 		
-		if(iResource != RESOURCE_1)
+		//if(iResource != RESOURCE_1)
 		{
 			DWORD dwLen = 0;
 			if ((!(WriteFile(hFile, pBuffer, resLen, &dwLen, NULL))) || 
@@ -107,7 +109,7 @@ int pullPakFiles(int argc, char** argv)
 				return (1);
 			}
 			CloseHandle(hFile);
-		}
+		}/*
 		else	//Progress bar sort of thing for resource.pak
 		{
 			DWORD writtenLen = 0;
@@ -137,7 +139,7 @@ int pullPakFiles(int argc, char** argv)
 				}
 			}
 			CloseHandle(hFile);
-		}
+		}*/
 	}
 	
 	
@@ -177,7 +179,8 @@ int main(int argc, char** argv)
 	}
 	
 	//Grab resources
-	for(WORD iResource = RESOURCE_1; iResource <= RESOURCE_3; iResource++)
+	WORD iResource = RESOURCE_1;
+	//for(WORD iResource = RESOURCE_1; iResource <= RESOURCE_3; iResource++)
 	{
 		// Add this resource to the update list.
 		result = UpdateResource(hUpdateRes, 
@@ -203,7 +206,7 @@ int main(int argc, char** argv)
 	
 	//Done
 	free(cZero);
-	cout << "100 percent done" << endl;
+	//cout << "100 percent done" << endl;
 	return 0;
 }
 

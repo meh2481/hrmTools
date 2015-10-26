@@ -15,7 +15,7 @@ void makeFolder(u32 resId)
 	if(pos != wstring::npos)
 		sFilename = sFilename.substr(0,pos);
 	sFilename = TEXT("./") + sFilename;
-	//cout << "Creating folder " << ws2s(sFilename) << endl;
+	cout << "Creating folder " << ws2s(sFilename) << endl;
 	ttvfs::CreateDirRec(ws2s(sFilename).c_str());
 }
 
@@ -89,6 +89,18 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 			
 		if(dh.bCompressed)	//Compressed
 		{
+			/*
+			{
+				//Write this out to the file
+				FILE* fOut = _wfopen(sFilename.c_str(), TEXT("wb"));
+				if(fOut != NULL)
+				{
+					fwrite(dh.data.data, 1, dh.data.compressedSize, fOut);
+					fclose(fOut);
+				}
+				
+			}*/
+		
 			uint8_t* tempData = decompress(&dh.data);
 			if(tempData == NULL)
 			{
@@ -108,7 +120,18 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		   sFilename.find(TEXT("colorbgicon")) != wstring::npos ||
 		   sFilename.find(TEXT("greybgicon")) != wstring::npos)			//Also would include .png.normal files as well
 		{
-			convertToPNG(sFilename.c_str(), dh.data.data, dh.data.decompressedSize);	//Do the conversion to PNG
+			//convertToPNG(sFilename.c_str(), dh.data.data, dh.data.decompressedSize);	//Do the conversion to PNG
+			
+			//wstring s = sFilename;
+			//s += TEXT(".uncompressed");
+			
+			FILE* fOut = _wfopen(sFilename.c_str(), TEXT("wb"));
+			if(fOut != NULL)
+			{
+				fwrite(dh.data.data, 1, dh.data.decompressedSize, fOut);
+				fclose(fOut);
+			}
+			
 		}
 		else	//For other file types, go ahead and write to the file before converting
 		{
@@ -134,11 +157,11 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		}
 		
 		//Convert sndmanifest.dat to XML
-		else if(sFilename.find(TEXT("sndmanifest.dat")) != wstring::npos)
+		/*else if(sFilename.find(TEXT("sndmanifest.dat")) != wstring::npos)
 		{
 			sndManifestToXML(sFilename.c_str());
 			unlink(ws2s(sFilename).c_str());
-		}
+		}*/
 		
 		//Convert itemmanifest.dat to XML
 		else if(sFilename.find(TEXT("itemmanifest.dat")) != wstring::npos)
@@ -176,7 +199,7 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		}
 		
 		//Convert .flac binary files to OGG
-		else if(sFilename.find(TEXT(".flac")) != wstring::npos ||
+		/*else if(sFilename.find(TEXT(".flac")) != wstring::npos ||
 				sFilename.find(TEXT(".FLAC")) != wstring::npos)
 		{
 			wstring s = sFilename;
@@ -196,7 +219,7 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		else if(sFilename.find(TEXT(".font.xml")) != wstring::npos)
 		{
 			fontToXML(sFilename);
-		}
+		}*/
 		
 		//Convert vdata/loctexmanifest.bin to XML
 		else if(sFilename.find(TEXT("loctexmanifest.bin")) != wstring::npos)
@@ -237,6 +260,8 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 
 void threadedDecompress()
 {
+	ttvfs::CreateDirRec("./output/");
+
 	g_iCurResource = 0;
 	g_iNumResources = g_lThreadedResources.size();
 	
