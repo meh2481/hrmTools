@@ -1,5 +1,5 @@
 SHELL=C:/Windows/System32/cmd.exe
-objects = wordPackDict.o sndmanifest.o itemmanifest.o combodb.o residmap.o zpipe.o ogg.o image.o font.o loctex.o parse.o matrix.o tinyxml2.o letter.o catalog.o
+objects = sndmanifest.o residmap.o zpipe.o ogg.o image.o font.o parse.o tinyxml2.o
 decompressobjects = $(objects) hrmDecompress.o threadDecompress.o
 comressobjects = $(objects) hrmDecompress.o threadCompress.o
 HEADERPATH = -I./include

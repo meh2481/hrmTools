@@ -103,6 +103,17 @@ typedef struct
 
 typedef struct
 {
+    u32 numImages;
+    //u32 imgOffset[numImages];
+} pngHeader;
+
+typedef struct
+{
+	u32 offset;	//point to ImageHeader
+} imgOffset;
+
+typedef struct
+{
 	u32 width;
 	u32 height;
 	u32 flags;
@@ -681,31 +692,12 @@ void threadedCompress(list<wstring> resources);				//Compress resources with mul
 //image.cpp functions
 bool convertToPNG(const wchar_t* cFilename, uint8_t* data, u32 size);
 bool convertFromPNG(const wchar_t* cFilename);				//Convert a PNG image to a game image file
-bool myPicturesToXML(wstring sFilename);					//Convert vdata/myPicturesImage.dat
-bool XMLToMyPictures(wstring sFilename);
-bool smokeImageToXML(wstring sFilename);					//Convert vdata/smokeImage.dat
-bool XMLToSmokeImage(wstring sFilename);
-bool fluidPalettesToXML(wstring sFilename);					//Convert vdata/fluidPalettes.dat
-bool XMLToFluidPalettes(wstring sFilename);
-//wordPackDict.cpp functions
-bool wordPackToXML(const wchar_t* cFilename);				//Convert wordPackDict.dat to XML
-bool XMLToWordPack(const wchar_t* cFilename);				//Convert wordPackDict.dat.xml back to binary .dat form
 //sndmanifest.cpp functions
 bool sndManifestToXML(const wchar_t* cFilename);			//Convert sndManifest.dat to XML
 bool XMLToSndManifest(const wchar_t* cFilename);			//Convert sndManifest.dat.xml back to binary .dat form
 void initSoundManifest();									//Read in sndManifest.dat so that we can have the correct filenames for all sounds
 u32 getSoundId(wstring sSound);								//Get a sound ID from the filename
 wstring getSoundName(u32 soundResId);						//Get a sound filename from the sound ID
-//itemmanifest.cpp functions
-bool itemManifestToXML(const wchar_t* cFilename);			//Convert itemmanifest.dat to XML
-bool XMLToItemManifest(const wchar_t* cFilename);			//Convert itemmanifest.dat.xml back to binary .dat form
-wstring toLangString(u32 languageId);						//Convert a language ID to a string (for example, 0x656E becomes "en")
-u32 toLangID(wstring languageString);						//Vice versa
-//combodb.cpp functions
-bool comboDBToXML(const wchar_t* cFilename);
-bool XMLToComboDB(const wchar_t* cFilename);
-u32 itemNameToID(string name);
-string itemIDToName(u32 id);
 //residmap.cpp functions
 void initResMap();											//Read in residmap.dat so that we can have the correct filenames for all resource files
 bool residMapToXML(const wchar_t* cFilename);				//Convert residmap.dat to XML
@@ -727,24 +719,12 @@ bool XMLToFont(wstring sFilename);							//Convert font XML files back to origin
 int binaryToOgg( const wchar_t* in, const wchar_t* out );	//Function from Allan to convert a game sound file to .ogg
 int oggToBinary( const wchar_t* in, const wchar_t* out );	//Function from Allan to convert an .ogg file to the game's sound format
 takeRecord getOggData( const wchar_t* cFile );				//Grab the data from an OGG file to populate sndManifest.dat
-//loctex.cpp functions
-bool LoctexManifestToXML(wstring sFilename);				//Convert loctexmanifest.bin to XML
-bool XMLToLoctexManifest(wstring sFilename);				//Convert loctexmanifest.bin.xml back to binary form
 //parse.cpp functions
 void writeVec2(XMLElement* elem, string sAttributeName, vec2 vec);	//Write out a vec2 as one XML attribute
 void readVec2(XMLElement* elem, string sAttributeName, vec2* vec);	//Read a vec2 from one XML attribute
 string stripCommas(string s);
 string RGBToString(f32 r, f32 g, f32 b);
 void RGBFromString(f32* r, f32* g, f32* b, string s);
-//matrix.cpp functions
-void WriteTransforms(XMLElement* elemParent, XMLDocument* doc, mtx23 mat);	//Write a 2x3 matrix to XML in the most readable format possible
-void ReadTransforms(XMLElement* elem, mtx23* mat);	//Read a 2x3 matrix from XML
-//letter.cpp functions
-bool letterToXML(wstring sFilename);
-bool XMLToLetter(wstring sFilename);
-//catalog.cpp functions
-bool catalogToXML(wstring sFilename);
-bool XMLToCatalog(wstring sFilename);
 
 
 

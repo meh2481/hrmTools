@@ -1,4 +1,5 @@
 #include "pakDataTypes.h"
+#include <sstream>
 
 list<ThreadConvertHelper> g_lThreadedResources;
 u32 g_iCurResource;
@@ -88,19 +89,7 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		}
 			
 		if(dh.bCompressed)	//Compressed
-		{
-			/*
-			{
-				//Write this out to the file
-				FILE* fOut = _wfopen(sFilename.c_str(), TEXT("wb"));
-				if(fOut != NULL)
-				{
-					fwrite(dh.data.data, 1, dh.data.compressedSize, fOut);
-					fclose(fOut);
-				}
-				
-			}*/
-		
+		{		
 			uint8_t* tempData = decompress(&dh.data);
 			if(tempData == NULL)
 			{
@@ -120,18 +109,23 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		   sFilename.find(TEXT("colorbgicon")) != wstring::npos ||
 		   sFilename.find(TEXT("greybgicon")) != wstring::npos)			//Also would include .png.normal files as well
 		{
-			//convertToPNG(sFilename.c_str(), dh.data.data, dh.data.decompressedSize);	//Do the conversion to PNG
-			
-			//wstring s = sFilename;
-			//s += TEXT(".uncompressed");
-			
-			FILE* fOut = _wfopen(sFilename.c_str(), TEXT("wb"));
-			if(fOut != NULL)
+			pngHeader ph;
+			memcpy((void*)&ph, dh.data.data, sizeof(pngHeader));
+			for(int i = 0; i < ph.numImages; i++)
 			{
-				fwrite(dh.data.data, 1, dh.data.decompressedSize, fOut);
-				fclose(fOut);
+				wstringstream wss;
+				wss << sFilename << TEXT("_") << i << TEXT(".png");
+				
+				imgOffset off;
+				memcpy((void*)&off, &dh.data.data[sizeof(pngHeader)+i*sizeof(imgOffset)], sizeof(imgOffset));
+				
+				convertToPNG(wss.str().c_str(), &dh.data.data[off.offset], 0);	//Do the conversion to PNG. We don't even use the size hooray
 			}
 			
+			//Just convert the largest image
+			//imgOffset off;
+			//memcpy((void*)&off, &dh.data.data[sizeof(pngHeader)], sizeof(imgOffset));
+			//convertToPNG(sFilename.c_str(), &dh.data.data[off.offset], 0);	//Do the conversion to PNG			
 		}
 		else	//For other file types, go ahead and write to the file before converting
 		{
@@ -149,57 +143,19 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		}
 		free(dh.data.data);	//Free memory from this file
 		
-		//Convert wordPackDict.dat to XML
-		if(sFilename.find(TEXT("wordPackDict.dat")) != wstring::npos)
-		{
-			wordPackToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}
-		
-		//Convert sndmanifest.dat to XML
-		/*else if(sFilename.find(TEXT("sndmanifest.dat")) != wstring::npos)
-		{
-			sndManifestToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}*/
-		
-		//Convert itemmanifest.dat to XML
-		else if(sFilename.find(TEXT("itemmanifest.dat")) != wstring::npos)
-		{
-			itemManifestToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}
-		
-		//Convert letterdb.dat to XML
-		else if(sFilename.find(TEXT("letterdb.dat")) != wstring::npos)
-		{
-			letterToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}
-		
-		//Convert catalogdb.dat to XML
-		else if(sFilename.find(TEXT("catalogdb.dat")) != wstring::npos)
-		{
-			catalogToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}
-		
-		//Convert combodb.dat to XML
-		else if(sFilename.find(TEXT("combodb.dat")) != wstring::npos)
-		{
-			comboDBToXML(sFilename.c_str());
-			unlink(ws2s(sFilename).c_str());
-		}
-		
 		//Convert residmap.dat to XML
-		else if(sFilename.find(TEXT("residmap.dat")) != wstring::npos)
+		if(sFilename.find(TEXT("residmap.dat")) != wstring::npos)
 		{
 			residMapToXML(sFilename.c_str());
 			unlink(ws2s(sFilename).c_str());
 		}
 		
+		//These are all broken/different in HRM 
+		//TODO: Fix/figure out new formats
+		
+		/*
 		//Convert .flac binary files to OGG
-		/*else if(sFilename.find(TEXT(".flac")) != wstring::npos ||
+		else if(sFilename.find(TEXT(".flac")) != wstring::npos ||
 				sFilename.find(TEXT(".FLAC")) != wstring::npos)
 		{
 			wstring s = sFilename;
@@ -219,35 +175,15 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		else if(sFilename.find(TEXT(".font.xml")) != wstring::npos)
 		{
 			fontToXML(sFilename);
-		}*/
-		
-		//Convert vdata/loctexmanifest.bin to XML
-		else if(sFilename.find(TEXT("loctexmanifest.bin")) != wstring::npos)
-		{
-			LoctexManifestToXML(sFilename);
-			unlink(ws2s(sFilename).c_str());
 		}
 		
-		//Convert vdata/myPicturesImage.dat to XML
-		else if(sFilename.find(TEXT("myPicturesImage.dat")) != wstring::npos)
+		//Convert sndmanifest.dat to XML
+		else if(sFilename.find(TEXT("sndmanifest.dat")) != wstring::npos)
 		{
-			myPicturesToXML(sFilename);
+			sndManifestToXML(sFilename.c_str());
 			unlink(ws2s(sFilename).c_str());
 		}
-		
-		//Convert vdata/smokeImage.dat to XML
-		else if(sFilename.find(TEXT("smokeImage.dat")) != wstring::npos)
-		{
-			smokeImageToXML(sFilename);
-			unlink(ws2s(sFilename).c_str());
-		}
-		
-		//Convert vdata/fluidPalettes.dat to XML
-		else if(sFilename.find(TEXT("fluidPalettes.dat")) != wstring::npos)
-		{
-			fluidPalettesToXML(sFilename);
-			unlink(ws2s(sFilename).c_str());
-		}
+		*/
 		
 		if(sFilename == TEXT(RESIDMAP_NAME) && g_iCurResource == 1)
 		{

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 using namespace std;
 
-#define RESOURCE_1_NAME	"resources.pak"
+#define RESOURCE_1_NAME	"resource.pak"
 //#define RESOURCE_2_NAME	"embed.pak"
 //#define RESOURCE_3_NAME	"frontend.pak"
 
