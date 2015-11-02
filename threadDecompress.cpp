@@ -111,6 +111,8 @@ DWORD WINAPI decompressResource(LPVOID lpParam)
 		{
 			pngHeader ph;
 			memcpy((void*)&ph, dh.data.data, sizeof(pngHeader));
+			
+			//Convert all images
 			for(int i = 0; i < ph.numImages; i++)
 			{
 				wstringstream wss;
